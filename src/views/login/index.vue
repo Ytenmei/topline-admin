@@ -5,11 +5,11 @@
         <img src="./logo_index.png" alt="黑马头条">
       </div>
       <div class="login-form">
-        <el-form ref="form" :model="form" >
-          <el-form-item >
+        <el-form ref="ruleForm" :model="form" :rules="rules">
+          <el-form-item prop="mobile">
             <el-input v-model="form.mobile" placeholder="手机号"></el-input>
           </el-form-item>
-          <el-form-item >
+          <el-form-item prop="code">
             <!-- 栅格布局 -->
             <el-col :span="10">
             <el-input v-model="form.code" placeholder="验证码"></el-input>
@@ -19,7 +19,7 @@
             </el-col>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
+            <el-button class="btn-login" type="primary" @click="handleLogin" :loading="loginLoding">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -35,15 +35,40 @@ export default {
   name: 'AppLogin',
   data () {
     return {
+      // 表单数据
       form: {
         mobile: '',
         code: ''
       },
+      // 登录按钮的loding 状态
+      loginLoding: false,
+      // 表单验证规则
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { min: 11, max: 11, message: '长度必须为11个字符', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { min: 6, max: 6, message: '长度为6位字符', trigger: 'blur' }
+        ]
+      },
+      // 通过initGeetest 得到的极验验证码对象
       captchaObj: null
     }
   },
   methods: {
     handleLogin () {
+      this.$refs['ruleForm'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        // 表单验证通过，提交登录
+        this.submitLogin()
+      })
+    },
+    submitLogin () {
+      this.loginLoding = true
       axios({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
@@ -54,6 +79,7 @@ export default {
           message: '登陆成功',
           type: 'success'
         })
+        this.loginLoding = false
         this.$router.push({
           name: 'home'
         })
@@ -61,6 +87,7 @@ export default {
         if (error.response.status === 400) {
           this.$message.error('登陆失败!手机号或者验证错误')
         }
+        this.loginLoding = false
       })
     },
     handleSendCode () {
@@ -110,6 +137,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style lang="less" scoped>
