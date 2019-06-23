@@ -12,14 +12,14 @@
           <el-form-item >
             <!-- 栅格布局 -->
             <el-col :span="10">
-            <el-input v-model="form.name" placeholder="验证码"></el-input>
+            <el-input v-model="form.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="10" :offset="2">
             <el-button @click="handleSendCode">获取验证码</el-button>
             </el-col>
           </el-form-item>
           <el-form-item>
-            <el-button class="btn-login" type="primary" @click="onSubmit">登录</el-button>
+            <el-button class="btn-login" type="primary" @click="handleLogin">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -36,15 +36,32 @@ export default {
   data () {
     return {
       form: {
-        mobile: '15901508754',
+        mobile: '',
         code: ''
       },
       captchaObj: null
     }
   },
   methods: {
-    onSubmit () {
-      console.log('submit!')
+    handleLogin () {
+      axios({
+        method: 'POST',
+        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        data: this.form
+      }).then(res => {
+        this.$message({
+          showClose: true,
+          message: '登陆成功',
+          type: 'success'
+        })
+        this.$router.push({
+          name: 'home'
+        })
+      }).catch(error => {
+        if (error.response.status === 400) {
+          this.$message.error('登陆失败!手机号或者验证错误')
+        }
+      })
     },
     handleSendCode () {
       const { mobile } = this.form
