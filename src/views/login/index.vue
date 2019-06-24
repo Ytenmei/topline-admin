@@ -17,7 +17,7 @@
             <el-col :span="10" :offset="2">
             <!-- <el-button @click="handleSendCode">获取验证码</el-button> -->
                                                 <!--要么是null要么是定时器     三元表达式判断        -->
-            <el-button @click="codeCountDown" :disabled="!!codeTimer">{{ codeTimer ? `剩余${codeSecons}秒`:'获取验证码'}}</el-button>
+            <el-button @click="handleSendCode" :disabled="!!codeTimer || codeLoging ">{{ codeTimer ? `剩余${codeSecons}秒`:'获取验证码'}}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item prop="agree">
@@ -40,7 +40,7 @@
 <script>
 import axios from 'axios'
 import '@/vendor/gt'
-
+const initCodeSeconds = 60
 export default {
   name: 'AppLogin',
   data () {
@@ -56,10 +56,12 @@ export default {
       // 登录按钮的loding 状态
       loginLoding: false,
       // 倒计时事件
-      codeSecons: 10,
+      codeSecons: initCodeSeconds,
       // 倒计时定时器
       codeTimer: null,
+      sendMobile: '', // 保存初始化验证之后的手机号
       // 表单验证规则
+      codeLoging: false,
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -118,18 +120,30 @@ export default {
         if (errorMessage) {
           return
         }
-        this.showGeetest()
+
+        if (this.captchaObj) {
+          if (this.form.mobile !== this.sendMobile) {
+            // 在重新初始化之前，把之前初始化后的插件DOM删除掉
+            document.body.removeChild(document.querySelector('.geetest_panel '))
+            // 重新初始化
+            this.showGeetest()
+          } else {
+            this.captchaObj.verify()
+          }
+        } else {
+          this.showGeetest()
+        }
+        // 手机号码有效，才初始化验证码插件
+        // this.showGeetest()
       })
     },
     showGeetest () {
-      const { mobile } = this.form
+      // const { mobile } = this.form
       // 判断70行
-      if (this.captchaObj) {
-        return this.captchaObj.verify()
-      }
+      this.codeLoging = true
       axios({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.form.mobile}`
       }).then(res => {
         const data = res.data.data
         window.initGeetest({
@@ -143,9 +157,13 @@ export default {
         }, (captchaObj) => {
           // 调用
           this.captchaObj = captchaObj
-          captchaObj.onReady(function () {
+          // 只有 Read了才能显示代码
+          captchaObj.onReady(() => {
+            this.sendMobile = this.form.mobile
             captchaObj.verify()
-          }).onSuccess(function () {
+            // 验证码初始化好
+            this.codeLoging = false
+          }).onSuccess(() => {
             const {
               geetest_challenge: challenge,
               geetest_seccode: seccode,
@@ -153,7 +171,7 @@ export default {
             captchaObj.getValidate()
             axios({
               method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${this.form.mobile}`,
               params: {
                 challenge,
                 validate,
@@ -170,7 +188,7 @@ export default {
       this.codeTimer = window.setInterval(() => {
         this.codeSecons--
         if (this.codeSecons <= 0) {
-          this.codeSecons = 10
+          this.codeSecons = initCodeSeconds
           window.clearInterval(this.codeTimer)
           this.codeTimer = null
         }
