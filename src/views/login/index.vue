@@ -15,7 +15,9 @@
             <el-input v-model="form.code" placeholder="验证码"></el-input>
             </el-col>
             <el-col :span="10" :offset="2">
-            <el-button @click="handleSendCode">获取验证码</el-button>
+            <!-- <el-button @click="handleSendCode">获取验证码</el-button> -->
+                                                <!--要么是null要么是定时器     三元表达式判断        -->
+            <el-button @click="codeCountDown" :disabled="!!codeTimer">{{ codeTimer ? `剩余${codeSecons}秒`:'获取验证码'}}</el-button>
             </el-col>
           </el-form-item>
           <el-form-item prop="agree">
@@ -53,6 +55,10 @@ export default {
       isDisable: true,
       // 登录按钮的loding 状态
       loginLoding: false,
+      // 倒计时事件
+      codeSecons: 10,
+      // 倒计时定时器
+      codeTimer: null,
       // 表单验证规则
       rules: {
         mobile: [
@@ -154,11 +160,21 @@ export default {
                 seccode
               }
             }).then(res => {
-              console.log(res.data)
+              this.codeCountDown()
             })
           })
         })
       })
+    },
+    codeCountDown () {
+      this.codeTimer = window.setInterval(() => {
+        this.codeSecons--
+        if (this.codeSecons <= 0) {
+          this.codeSecons = 10
+          window.clearInterval(this.codeTimer)
+          this.codeTimer = null
+        }
+      }, 1000)
     },
     handleYen () {
       if (this.form.agree === true) {
