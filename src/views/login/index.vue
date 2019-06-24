@@ -106,6 +106,16 @@ export default {
       })
     },
     handleSendCode () {
+      // 校验手机号
+      this.$refs['ruleForm'].validateField('mobile', errorMessage => {
+        // 判断返回的结果：输入手机号为空字符串，没输为空字符串
+        if (errorMessage) {
+          return
+        }
+        this.showGeetest()
+      })
+    },
+    showGeetest () {
       const { mobile } = this.form
       // 判断70行
       if (this.captchaObj) {
