@@ -18,8 +18,16 @@
             <el-button @click="handleSendCode">获取验证码</el-button>
             </el-col>
           </el-form-item>
+          <el-form-item prop="agree">
+            <el-checkbox v-model="form.agree" @change=handleYen></el-checkbox>
+            <span>我已阅读并同意
+              <a href="#">用户协议
+              </a>和
+              <a href="#">隐私条款
+              </a></span>
+          </el-form-item>
           <el-form-item>
-            <el-button class="btn-login" type="primary" @click="handleLogin" :loading="loginLoding">登录</el-button>
+            <el-button class="btn-login" type="primary" @click="handleLogin" :loading="loginLoding" :disabled='isDisable'>登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -38,8 +46,11 @@ export default {
       // 表单数据
       form: {
         mobile: '',
-        code: ''
+        code: '',
+        // 是否同意用户协议
+        agree: false
       },
+      isDisable: true,
       // 登录按钮的loding 状态
       loginLoding: false,
       // 表单验证规则
@@ -51,6 +62,10 @@ export default {
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
           { min: 6, max: 6, message: '长度为6位字符', trigger: 'blur' }
+        ],
+        agree: [
+          { required: true, message: '请同意用户协议', trigger: 'change' },
+          { pattern: /true/, message: '请同意用户协议', trigger: 'change' }
         ]
       },
       // 通过initGeetest 得到的极验验证码对象
@@ -134,6 +149,13 @@ export default {
           })
         })
       })
+    },
+    handleYen () {
+      if (this.form.agree === true) {
+        this.isDisable = false
+      } else {
+        this.isDisable = true
+      }
     }
   }
 }
