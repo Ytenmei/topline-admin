@@ -19,8 +19,10 @@ axios.interceptors.request.use((config) => {
   // console.log(config)
   // 添加本地储存用户信息
   const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+  if (userInfo) { // 如果登陆了，才给那些需要token的接口统一添加token
+    config.headers.Authorization = `Bearer ${userInfo.token}`
+  }
   // 让所有经过这里的aixos请求都添加token信息
-  config.headers.Authorization = `Bearer ${userInfo.token}`
   return config
 }, error => {
   return Promise.reject(error)
@@ -31,6 +33,17 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use((response) => {
   return response.data.data
 }, error => {
+  // 本地储存的用户信息状态码
+  const status = error.response.status
+  // 判断
+  if (status === 401) {
+    // 删除用户信息
+    window.localStorage.removeItem('user_info')
+    // 跳转到login页面
+    router.push({
+      name: 'login'
+    })
+  }
   return Promise.reject(error)
 })
 //  往原型对象中添加成员
