@@ -29,7 +29,7 @@ axios.interceptors.request.use((config) => {
 // Axios 响应拦截器
 // 所有axios发情的响应都需要经过这里
 axios.interceptors.response.use((response) => {
-  return response
+  return response.data.data
 }, error => {
   return Promise.reject(error)
 })

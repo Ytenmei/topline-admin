@@ -96,8 +96,8 @@ export default {
         method: 'POST',
         url: '/authorizations',
         data: this.form
-      }).then(res => {
-        window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
+      }).then(data => {
+        window.localStorage.setItem('user_info', JSON.stringify(data))
         this.$message({
           showClose: true,
           message: '登陆成功',
@@ -145,8 +145,8 @@ export default {
       this.$http({
         method: 'GET',
         url: `/captchas/${this.form.mobile}`
-      }).then(res => {
-        const data = res.data.data
+      }).then(data => {
+        // const data = res.data.data
         window.initGeetest({
           // 以下配置参数来自服务端 SDK
           gt: data.gt,
@@ -178,7 +178,7 @@ export default {
                 validate,
                 seccode
               }
-            }).then(res => {
+            }).then(data => {
               this.codeCountDown()
             })
           })

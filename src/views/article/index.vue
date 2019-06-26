@@ -69,7 +69,7 @@
 </template>
 
 <script>
-const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+// const userInfo = JSON.parse(window.localStorage.getItem('user_info'))
 export default {
   name: 'ArticleList',
   data () {
@@ -113,10 +113,10 @@ export default {
       url: '/articles',
       headers: { // 自定义请求头
       // Bearer 和token之间要有空格
-        Authorization: `Bearer ${userInfo.token}`
+        // Authorization: `Bearer ${userInfo.token}`
       }
-    }).then(res => {
-      console.log(res)
+    }).then(data => {
+
     })
   },
   methods: {
