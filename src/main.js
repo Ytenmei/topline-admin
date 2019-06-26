@@ -9,7 +9,7 @@ import './styles/index.less'
 import 'nprogress/nprogress.css'
 
 // 配置 axios 的基础路由
-axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
 //  往原型对象中添加成员
 Vue.prototype.$http = axios
 Vue.use(ElementUI)
