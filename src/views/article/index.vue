@@ -39,23 +39,41 @@
         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
       </div>
       <!-- table 表格 -->
+      <!--
+        data 用来指定表格的数据
+        表格不需要我们手动遍历
+        只需要把数据给el-table的data属性就可
+        然后配置 el-table-column 需要展示的数据字段即可
+       -->
       <el-table
         class="list-table"
-        :data="tableData"
+        :data="articles"
         style="width: 100%">
         <el-table-column
-          prop="date"
-          label="日期"
+            label="封面"
+          width="60">
+          <!-- 表格列默认只能输出文本，需要自定义里面的内容 -->
+          <!-- slot-scope是插槽作用域
+            scope（自定义名字）其中有一成员为row
+            scope.row为当前遍历对象
+          -->
+          <template slot-scope="scope">
+            <img width="30" :src="scope.row.cover.images[0]" alt="">
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="title"
+          label="标题"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="姓名"
+          prop="pubdate"
+          label="发布日期"
           width="180">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="地址">
+          prop="status"
+          label="状态">
         </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -74,26 +92,7 @@ export default {
   name: 'ArticleList',
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      },
-      {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      },
-      {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      },
-      {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
+      articles: [], // 列表数据
       form: {
         name: '',
         region: '',
@@ -108,20 +107,24 @@ export default {
     }
   },
   created () {
-    this.$http({
-      method: 'GET',
-      url: '/articles',
-      headers: { // 自定义请求头
-      // Bearer 和token之间要有空格
-        // Authorization: `Bearer ${userInfo.token}`
-      }
-    }).then(data => {
-
-    })
+    this.loadArticles()
   },
   methods: {
+    loadArticles () {
+      this.$http({
+        method: 'GET',
+        url: '/articles',
+        headers: { // 自定义请求头
+        // Bearer 和token之间要有空格
+          // Authorization: `Bearer ${userInfo.token}`
+        }
+      }).then(data => {
+        console.log(data)
+        this.articles = data.results
+      })
+    },
     onSubmit () {
-      console.log('submit!')
+      console.log('submit！')
     }
   }
 }
