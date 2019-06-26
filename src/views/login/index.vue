@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import '@/vendor/gt'
 const initCodeSeconds = 60
 export default {
@@ -92,9 +92,9 @@ export default {
     },
     submitLogin () {
       this.loginLoding = true
-      axios({
+      this.$http({
         method: 'POST',
-        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        url: '/authorizations',
         data: this.form
       }).then(res => {
         window.localStorage.setItem('user_info', JSON.stringify(res.data.data))
@@ -142,9 +142,9 @@ export default {
       // const { mobile } = this.form
       // 判断70行
       this.codeLoging = true
-      axios({
+      this.$http({
         method: 'GET',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${this.form.mobile}`
+        url: `/captchas/${this.form.mobile}`
       }).then(res => {
         const data = res.data.data
         window.initGeetest({
@@ -170,9 +170,9 @@ export default {
               geetest_seccode: seccode,
               geetest_validate: validate } =
             captchaObj.getValidate()
-            axios({
+            this.$http({
               method: 'GET',
-              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${this.form.mobile}`,
+              url: `/sms/codes/${this.form.mobile}`,
               params: {
                 challenge,
                 validate,
