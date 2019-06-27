@@ -6,7 +6,7 @@
       <div slot="header" class="clearfix">
         <span>筛选条件</span>
       </div>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" :model="filterParams" label-width="80px">
       <el-form-item label="状态">
     <el-radio-group v-model="filterParams.status">
       <el-radio label="">全部</el-radio>
@@ -18,12 +18,12 @@
   </el-form-item>
   <el-form-item label="频道">
     <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
+      <el-option label="全部" value=""></el-option>
       <el-option
       v-for="item in channels"
       :key="item.id"
       :label="item.name"
       :value="item.id"></el-option>
-      <el-option label="区域二" value="beijing"></el-option>
     </el-select>
   </el-form-item>
   <el-form-item label="时间">
@@ -100,12 +100,15 @@
     <!--
       分页默认10条数据，接口没有指定数据，则默认为10条
       一：分多少页
+      total 总记录数
+      current-page 高亮的当前页码数据
       二：页面改变加载对应的页码数据
      -->
     <el-pagination
       background
       layout="prev, pager, next"
       :total="totalCount"
+      current-page="page"
       :disabled="articleLoding"
       @current-change="handleCurrentChange"
       >
@@ -208,8 +211,8 @@ export default {
     },
     onSubmit () {
       // console.log('submit！')
-      // this.page = 1
-      this.loadArticles()
+      this.page = 1 // 让分页组件的页码回到第一页
+      this.loadArticles() // 加载第一页的数据
     },
     handleCurrentChange (page) {
       // 当页码发生改变的时候，请求该页码对应的数据
