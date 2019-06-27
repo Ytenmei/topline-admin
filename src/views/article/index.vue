@@ -7,15 +7,16 @@
       </div>
       <el-form ref="form" :model="form" label-width="80px">
       <el-form-item label="状态">
-    <el-radio-group v-model="form.resource">
-      <el-radio label="全部"></el-radio>
-      <el-radio v-for="item in statTypes"
+    <el-radio-group v-model="filterParams.status">
+      <el-radio label="">全部</el-radio>
+      <el-radio v-for="(item, index) in statTypes"
       :key="item.label"
-      :label="item.label"></el-radio>
+      :value="index"
+      :label="index">{{ item.label }}</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="频道">
-    <el-select v-model="form.region" placeholder="请选择活动区域">
+    <el-select v-model="filterParams.channel_id" placeholder="请选择活动区域">
       <el-option
       v-for="item in channels"
       :key="item.id"
@@ -24,11 +25,15 @@
       <el-option label="区域二" value="beijing"></el-option>
     </el-select>
   </el-form-item>
-  <el-form-item label="活动形式">
+  <el-form-item label="时间">
     <el-date-picker
-      v-model="form.value1"
-      type="date"
-      placeholder="选择日期">
+    value-format="yyyy-MM-dd"
+    v-model="begin_end_pubdate"
+    @change="handleDateChange"
+      type="daterange"
+      rage-separator="至"
+      start-placeholder="开始日期"
+      end-placeholder="结束日期">
     </el-date-picker>
   </el-form-item>
   <el-form-item>
@@ -152,7 +157,14 @@ export default {
           label: '已删除'
         }
       ],
-      channels: []
+      channels: [],
+      filterParams: {
+        status: '', // 文章状态
+        channel_id: '', // 频道ID
+        begin_pubdate: '', // 开始事件
+        end_pubdate: '' // 结束事件
+      },
+      begin_end_pubdate: []
     }
   },
   created () {
@@ -220,6 +232,12 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 日期选择组件改变事件
+    handleDateChange (value) {
+      // console.log(value)
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
     }
   }
 }
