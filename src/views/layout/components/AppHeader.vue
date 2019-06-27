@@ -3,8 +3,9 @@
     <el-col :span="14">江苏传智播客教育科技股份有限公司</el-col>
     <el-col :span="10">
       <el-dropdown trigger="click">
-        <span class="el-dropdown-link">{{ userInfo.name}}
-        <!-- <img width="30" src="http://toutiao.meiduo.site/FKj6tQi3xJwVXi1u2swCElotfdCi"> -->
+        <span class="el-dropdown-link">
+          {{ userInfo.name}}
+        <img width="30" src="http://toutiao.meiduo.site/Fl5qDDrEfaXprgrGC-8mieKsn8gd">
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
