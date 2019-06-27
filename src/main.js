@@ -3,6 +3,7 @@ import App from './App.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
+import JSONbig from 'json-bigint'
 
 import router from './router'
 import './styles/index.less'
@@ -10,7 +11,14 @@ import 'nprogress/nprogress.css'
 
 // 配置 axios 的基础路由
 axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
-
+// 使用JSONbig处理返回数据中超出JS安全整数范围的数字
+// JSON自己会处理数据中的数字
+// 后端的数据id超出了js的安全整数范围，会导致报错
+// 可以使用JSON-bigint 来处理
+axios.defaults.transformResponse = [function (data) {
+  // data是未经处理的后端响应数据：JSON格式字符串
+  return JSONbig.parse(data)
+}]
 // Axios 请求拦截器
 // 所有axios发起的请求都需要经过这里
 // return config 允许通过的方式
