@@ -10,14 +10,25 @@ import './styles/index.less'
 import 'nprogress/nprogress.css'
 
 // 配置 axios 的基础路由
-axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+// axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0/'
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 // 使用JSONbig处理返回数据中超出JS安全整数范围的数字
 // JSON自己会处理数据中的数字
 // 后端的数据id超出了js的安全整数范围，会导致报错
 // 可以使用JSON-bigint 来处理
+// 拦截器，未经处理的后端数据
 axios.defaults.transformResponse = [function (data) {
   // data是未经处理的后端响应数据：JSON格式字符串
-  return JSONbig.parse(data)
+  // JSONbig.parse 类似于JSON.parse，其作用是将JSON格式字符转成JS对象。
+  // 区别是：JSONbig.parse会检测被转换数据中的数字是否超出了JS的安全整数范围，如果超出，它会做特殊处理
+  // 如果data 不是一个JSON格式字符串，会导致JSONbig.parse转换失败并异常
+  // 执行删除操作，后端返回一个204状态码，但是没有返回任何空字符串，也就是空状态码
+  // 这里JSONbig.parse(空字符串)，所以报错了
+  try {
+    return JSONbig.parse(data)
+  } catch (err) {
+    return data
+  }
 }]
 // Axios 请求拦截器
 // 所有axios发起的请求都需要经过这里
@@ -39,7 +50,12 @@ axios.interceptors.request.use((config) => {
 // Axios 响应拦截器
 // 所有axios发情的响应都需要经过这里
 axios.interceptors.response.use((response) => {
-  return response.data.data
+  // return response.data.data
+  if (typeof response.data === 'object' && response.data.data) {
+    return response.data.data
+  } else {
+    return response.data
+  }
 }, error => {
   // 本地储存的用户信息状态码
   const status = error.response.status

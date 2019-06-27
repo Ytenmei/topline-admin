@@ -152,12 +152,30 @@ export default {
       this.loadArticles(page)
     },
     handleDelete (article) {
-      // console.log(article)
-      this.$http({
-        method: 'DELETE',
-        url: `http://ttapi.research.itcast.cn/mp/v1_0/articles/${article.id}`
-      }).then(data => {
-        console.log(data)
+      // console.log(article.id)
+      this.$confirm('确认删除?', '删除提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 发送删除请求
+        this.$http({ // 取消执行
+          method: 'DELETE',
+          url: `http://ttapi.research.itcast.cn/mp/v1_0/articles/${article.id}`
+        }).then(data => {
+          // 提示删除成功
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          // 重新加载数列表
+          this.loadArticles(this.page)
+        })
+      }).catch(() => { // 取消执行
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   }
