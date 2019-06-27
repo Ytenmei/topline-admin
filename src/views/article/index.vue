@@ -71,11 +71,13 @@
           width="180">
         </el-table-column>
         <el-table-column
-          prop="status"
           label="状态">
+          <template slot-scope="scope">
+          <el-tag :type="statTypes[scope.row.status].type">{{ statTypes[scope.row.status].label }}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          label="状态">
+          label="操作">
           <template slot-scope="scope">
             <el-button type="success" plain>修改</el-button>
             <el-button type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
@@ -120,7 +122,30 @@ export default {
         value1: ''
       },
       totalCount: 0,
-      articleLoding: false
+      articleLoding: false,
+      page: 1,
+      statTypes: [
+        {
+          type: 'info',
+          label: '草稿'
+        },
+        {
+          type: '',
+          label: '待审核'
+        },
+        {
+          type: 'success',
+          label: '审核通过'
+        },
+        {
+          type: 'warning',
+          label: '审核失败'
+        },
+        {
+          type: 'danger',
+          label: '已删除'
+        }
+      ]
     }
   },
   created () {
@@ -137,7 +162,7 @@ export default {
           per_page: 10 // 请求数据的每页大小，默认为10
         }
       }).then(data => {
-        console.log(data)
+        // console.log(data)
         this.articles = data.results // 列表数据
         this.totalCount = data.total_count // 总记录数
         this.articleLoding = false
