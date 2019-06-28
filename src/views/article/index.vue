@@ -108,7 +108,7 @@
       background
       layout="prev, pager, next"
       :total="totalCount"
-      current-page="page"
+      :current-page="page"
       :disabled="articleLoding"
       @current-change="handleCurrentChange"
       >
@@ -195,7 +195,7 @@ export default {
           ...fileterDate
         }
       }).then(data => {
-        // console.log(data)
+        console.log(data)
         this.articles = data.results // 列表数据
         this.totalCount = data.total_count // 总记录数
         this.articleLoding = false
