@@ -4,13 +4,16 @@
     <el-col :span="10">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          {{ userInfo.name}}
-        <img width="30" src="http://toutiao.meiduo.site/Fl5qDDrEfaXprgrGC-8mieKsn8gd">
-          <i class="el-icon-arrow-down el-icon--right"></i>
+        <img width="30" src="userInfo.photo">
+        {{ userInfo.name }}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
+          <!--
+            给组件注册原生事件： @原生事件类型.native="处理函数"
+            .native 修饰符：该事件会被注册给组件的根元素
+           -->
           <el-dropdown-item>账户设置</el-dropdown-item>
-          <el-dropdown-item>退出</el-dropdown-item>
+          <el-dropdown-item @click.native="handleLogout">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-col>
@@ -28,6 +31,30 @@ export default {
   },
   created () {
     this.userInfo = JSON.stringify(window.localStorage.getItem('user_info'))
+  },
+  methods: {
+    handleLogout () {
+      this.$confirm('是否确认退出吗?', '退出提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      // 清除本地储存中的用户信息 user_info
+        window.localStorage.removeItem('user_info')
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        })
+        this.$router.push({
+          name: 'login'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
+    }
   }
 }
 </script>
