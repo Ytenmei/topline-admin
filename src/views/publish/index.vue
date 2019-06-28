@@ -3,8 +3,8 @@
   <div slot="header" class="header">
     <span>发布文章</span>
     <div>
-      <el-button type="success" @click="handlePublish(false)">{{ isEdit ? '更新': '发布' }}</el-button>
-      <el-button type="primary" @click="handlePublish(true)">存入草稿</el-button>
+      <el-button :loading="publishLoading" type="success" @click="handlePublish(false)">{{ isEdit ? '更新': '发布' }}</el-button>
+      <el-button :loading="publishLoading" type="primary" @click="handlePublish(true)">存入草稿</el-button>
     </div>
   </div>
   <el-form v-loading="isEdit && editLoading" >
@@ -69,7 +69,8 @@ export default {
         channel_id: '' // 频道
       },
       editorOption: {}, // 富文本编辑器参数选项
-      editLoading: false
+      editLoading: false,
+      publishLoading: false
     }
   },
   computed: {
@@ -78,6 +79,9 @@ export default {
     },
     isEdit () {
       return this.$route.name === 'publish-edit'
+    },
+    articleID () {
+      return this.$route.params.id
     }
   },
   created () {
@@ -91,7 +95,7 @@ export default {
       this.editLoading = true
       this.$http({
         method: 'GET',
-        url: `/articles/${this.$route.params.id}`
+        url: `/articles/${this.articleID}`
       }).then(data => {
         this.articleForm = data
         this.editLoading = false
@@ -101,7 +105,19 @@ export default {
       })
     },
     handlePublish (draft = false) {
-      this.$http({
+      this.publishLoading = true // 禁用按钮点击状态
+      if (this.isEdit) {
+        this.submitEdit(draft).then(() => {
+          this.publishLoading = false
+        })
+      } else {
+        this.submitAdd(draft).then(() => {
+          this.publishLoading = false
+        })
+      }
+    },
+    submitAdd (draft) {
+      return this.$http({
         method: 'POST',
         url: '/articles',
         data: this.articleForm, // 发布文章的数据
@@ -116,6 +132,24 @@ export default {
       }).catch(err => {
         console.log(err)
         this.$message.error('发布失败')
+      })
+    },
+    submitEdit (draft) {
+      return this.$http({
+        method: 'PUT',
+        url: `/articles/${this.articleID}`,
+        data: this.articleForm, // 发布文章的数据
+        params: {
+          draft
+        }
+      }).then(data => {
+        this.$message({
+          type: 'success',
+          message: '更新成功'
+        })
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('更新失败')
       })
     }
   }
