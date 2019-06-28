@@ -26,7 +26,26 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :offset="2" :span="4"></el-col>
+      <el-col :offset="2" :span="4">
+        <!--
+          el-upload 上传组件，他会自动将用户选择的图像去请求上传，配置
+          action ：请求地址
+          由于它用的是自己内部的请求，不是使用的axiosu发请求
+            完整路径
+            它的请求不会经过axios拦截器，所以需要手动配置token
+         -->
+        <el-upload
+          class="avatar-uploader"
+          action="http://ttapi.research.itcast.cn/mp/v1_0/user/photo"
+          :headers="{ Authorization: token }"
+          name="photo"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload">
+          <img v-if="userInfo.photo" :src="userInfo.photo" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </el-col>
     </el-row>
   </el-card>
 </template>
@@ -36,7 +55,8 @@ export default {
   name: 'Account',
   data () {
     return {
-      userInfo: {}
+      userInfo: {},
+      token: `Bearer ${JSON.parse(window.localStorage.getItem('user_info')).token}`
     }
   },
   created () {
@@ -71,11 +91,37 @@ export default {
         console.log(err)
         this.$message.error('更新用户信息失败')
       })
+    },
+    handleAvatarSuccess () {
+    },
+    beforeAvatarUpload () {
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
