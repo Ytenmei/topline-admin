@@ -4,15 +4,15 @@
     <el-col :span="10">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-        <img width="30" src="userInfo.photo">
-        {{ userInfo.name }}<i class="el-icon-arrow-down el-icon--right"></i>
+        <img width="30" :src="$store.state.user.photo">
+        {{ $store.state.user.name }}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <!--
             给组件注册原生事件： @原生事件类型.native="处理函数"
             .native 修饰符：该事件会被注册给组件的根元素
            -->
-          <el-dropdown-item>账户设置</el-dropdown-item>
+          <el-dropdown-item @click.native="$router.push({ name:'account-setting'})">账户设置</el-dropdown-item>
           <el-dropdown-item @click.native="handleLogout">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -30,7 +30,7 @@ export default {
     }
   },
   created () {
-    this.userInfo = JSON.stringify(window.localStorage.getItem('user_info'))
+    this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
   },
   methods: {
     handleLogout () {

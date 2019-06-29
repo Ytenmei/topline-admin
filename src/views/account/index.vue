@@ -51,7 +51,7 @@
 
 <script>
 export default {
-  name: 'Account',
+  name: 'AccountSetting',
   data () {
     return {
       userInfo: {},
@@ -64,7 +64,7 @@ export default {
   methods: {
     loadUserInfo () {
       this.$http({
-        methods: 'GET',
+        method: 'GET',
         url: '/user/profile'
       }).then(data => {
         // console.log(data)
@@ -74,14 +74,15 @@ export default {
     handleUpdate () {
       const { name, intro, email } = this.userInfo
       this.$http({
-        methods: 'PATCH',
+        method: 'PATCH',
         url: '/user/profile',
         data: {
           name,
           intro,
           email
         }
-      }).then(() => {
+      }).then(data => {
+        this.$store.commit('changeUser', data)
         this.$message({
           type: 'success',
           message: '更新用户信息成功'
@@ -108,6 +109,10 @@ export default {
         data: formData
       }).then(data => {
         this.userInfo.photo = data.photo
+        // 将修改成功后的照片信息同步到容器中
+        // console.log(data)
+        // console.log(this.userInfo)
+        this.$store.commit('changeUser', this.userInfo)
         this.$message({
           type: 'success',
           message: '上传成功'
