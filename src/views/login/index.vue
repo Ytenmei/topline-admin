@@ -81,8 +81,10 @@ export default {
     }
   },
   methods: {
+    // 点击登录
     handleLogin () {
       this.$refs['ruleForm'].validate(valid => {
+        console.log(valid)
         if (!valid) {
           return
         }
@@ -90,20 +92,26 @@ export default {
         this.submitLogin()
       })
     },
+    // 提交登录
     submitLogin () {
+      // 登录时的按钮Loding状态
       this.loginLoding = true
       this.$http({
         method: 'POST',
         url: '/authorizations',
         data: this.form
       }).then(data => {
+        // 收到的数据添加到本地存储
         window.localStorage.setItem('user_info', JSON.stringify(data))
+        this.$store.commit('changeUser', data)
         this.$message({
           showClose: true,
           message: '登陆成功',
           type: 'success'
         })
+        // loding状态
         this.loginLoding = false
+        // 登录成功跳转页面
         this.$router.push({
           name: 'home'
         })

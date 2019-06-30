@@ -9,9 +9,10 @@ const store = new Vuex.Store({
   },
   mutations: {
     changeUser (state, data) {
+      console.log(state)
       // 修改容器中的用户信息，对象拷贝，将data中的数据成员拷贝到state.user中
       Object.assign(state.user, data)
-      window.localStorage.setItem('user-info', JSON.stringify(state.user))
+      window.localStorage.setItem('user_info', JSON.stringify(state.user))
     }
   }
 })

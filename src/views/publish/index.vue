@@ -69,13 +69,32 @@ export default {
         channel_id: '' // 频道
       },
       editorOption: {}, // 富文本编辑器参数选项
-      publishLoading: false
+      publishLoading: false,
+      formDirty: false // 内容脏否
+    }
+  },
+  // 监视器，监视组件实例中的成员，
+  // 当成员发生改变的时候，监视函数会被调用
+  // 注意：这里的监视无法取消，重复监视
+  // 需要取消的监视，可以通过this.$watch方式进行监视
+  watch: {
+    articleForm: {
+      handler () { // 当被监视数据发生改变时，这里会被调用
+        // console.log(123)
+        this.formDirty = true
+      },
+      deep: true // 对象、数据需要深度监视，普通数据则不需要
+      // immediate: true或false // 默认只有当被监视成员发生改变的时候才会调用监视函数。
     }
   },
   computed: {
     editor () {
       return this.$refs.myQuillEditor.quill
     }
+  },
+  created () {
+    // 发布页面直接调用监视
+    this.watchForm()
   },
   mounted () {
     console.log('this is current quill instance object', this.editor)
@@ -107,6 +126,34 @@ export default {
         console.log(err)
         this.$message.error(draft === true ? '保存草稿成功' : '发布失败')
       })
+    },
+    watchForm () {
+      const unWatch = this.$watch('articleForm', function () {
+        // console.log(this.formdDirty)
+        this.formDirty = true
+        unWatch()
+      }, {
+        deep: true
+      })
+    }
+    // 当要从当前导航到另一个路由的时候被触发
+    // 我么可以再这控制路由离开的行为
+    // 若有未保存的数据，提示用户
+    // to 要去那么可
+    // from 来自哪里
+    // next 允许通过的方法
+  },
+  beforeRouteLeave (to, from, next) {
+    // 如果表单没有被用户修改过，则让导航直接通过
+    if (!this.formDirty) {
+      return next()
+    }
+    const answer = window.confirm('当前有未保存的数据，确认离开吗？')
+    if (answer) {
+      next()
+    } else {
+      // 取消当前导航
+      next(false)
     }
   }
 }
