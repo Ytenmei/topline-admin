@@ -54,7 +54,7 @@
       <i class="el-icon-menu"></i>
       <span slot="title">图文数据</span>
     </el-menu-item>
-    <el-menu-item index="2-3">
+    <el-menu-item index="/fans/overview">
       <i class="el-icon-menu"></i>
       <span slot="title">粉丝概况</span>
     </el-menu-item>
