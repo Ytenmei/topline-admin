@@ -5,8 +5,12 @@
     </div>
     <div class="action">
       <el-radio-group v-model="active">
-        <el-radio-button label="全部"></el-radio-button>
-        <el-radio-button label="收藏"></el-radio-button>
+        <el-radio-button
+        label="全部"
+        @click.native="loadImages()"></el-radio-button>
+        <el-radio-button
+        label="收藏"
+        @click.native="loadImages(true)"></el-radio-button>
       </el-radio-group>
       <el-button type="primary">上传图片</el-button>
     </div>
@@ -45,10 +49,13 @@ export default {
   },
   methods: {
     // 记载素材图片
-    async loadImages () {
+    async loadImages (collect = false) {
       this.$http({
         method: 'GET',
-        url: '/user/images'
+        url: '/user/images',
+        params: {
+          collect // true:为收藏图片； false为全部图片
+        }
       }).then(data => {
         // console.log(data)
         this.images = data.results
