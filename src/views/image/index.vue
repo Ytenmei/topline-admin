@@ -12,7 +12,19 @@
         label="收藏"
         @click.native="loadImages(true)"></el-radio-button>
       </el-radio-group>
-      <el-button type="primary">上传图片</el-button>
+      <!-- <el-button type="primary">上传图片</el-button> -->
+      <!--
+        on-success 是一个prop参数
+        prop 绑定的数据时一个表达式
+       -->
+      <el-upload
+        action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+        :headers="{ Authorization: `Bearer ${$store.state.user.token}`}"
+        name="image"
+        :on-success="handleUpload"
+        :show-file-list="false">
+        <el-button size="small" type="primary">点击上传</el-button>
+      </el-upload>
     </div>
     <el-row :gutter="20">
       <el-col :span="5" v-for="item in images" :key="item.id">
@@ -57,7 +69,7 @@ export default {
           collect // true:为收藏图片； false为全部图片
         }
       }).then(data => {
-        // console.log(data)
+        console.log(data)
         this.images = data.results
       })
     },
@@ -108,6 +120,9 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    handleUpload () {
+      this.loadImages(false)
     }
   }
 }
