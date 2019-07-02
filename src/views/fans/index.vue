@@ -1,6 +1,8 @@
 <template>
   <div>
     <div id="main" style="width: 600px;height:400px;"></div>
+    <br>
+    <echarts-bar></echarts-bar>
   </div>
 </template>
 
@@ -10,8 +12,12 @@
 // 3. 在绘图前我们需要为 ECharts 准备一个具备高宽的 DOM 容器。
 // 4. 基于 DOM 容器初始化 echarts
 import echarts from 'echarts'
+import EchartsBar from './components/echarts-bar.vue'
 export default {
   name: 'FansOverView',
+  components: {
+    EchartsBar
+  },
   data () {
     return {}
   },
