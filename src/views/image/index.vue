@@ -21,6 +21,7 @@
             :icon="item.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'" circle plain></el-button>
             <el-button
             type="primary"
+            @click="handleDelete(item)"
             icon="el-icon-delete"
             circle plain></el-button>
           </div>
@@ -43,6 +44,7 @@ export default {
     this.loadImages()
   },
   methods: {
+    // 记载素材图片
     async loadImages () {
       this.$http({
         method: 'GET',
@@ -52,6 +54,7 @@ export default {
         this.images = data.results
       })
     },
+    // 收藏图片
     handleCollect (item) {
       const collect = !item.is_collected
       this.$http({
@@ -70,9 +73,38 @@ export default {
         console.log(err)
         this.$message.error(`${collect ? '' : '取消'}收藏失败`)
       })
+    },
+    // 删除图片
+    handleDelete (item) {
+      console.log(item)
+      this.$confirm('确认删除素材图片吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          method: 'DELETE',
+          url: `/user/images/${item.id}`
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+          this.loadImages()
+        }).catch(err => {
+          console.log(err)
+          this.$message.error('删除失败')
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
+
 </script>
 
 <style lang="less" scoped>
