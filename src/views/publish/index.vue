@@ -28,6 +28,9 @@
       <el-radio :label="0">无图</el-radio>
       <el-radio :label="-1">自动</el-radio>
     </el-radio-group>
+    <template v-if="articleForm.cover.type > 0">
+      <UploadImage v-for="item in articleForm.cover.type" :key="item.id"></UploadImage>
+    </template>
     </el-form-item>
     <el-form-item label="频道">
       <!--
@@ -51,6 +54,7 @@
 </template>
 
 <script>
+import UploadImage from './components/upload-image'
 import ArticleChannel from '@/components/article-channel'
 // require styles
 import 'quill/dist/quill.core.css'
@@ -62,7 +66,8 @@ export default {
   name: 'AppPublish',
   components: {
     ArticleChannel,
-    quillEditor
+    quillEditor,
+    UploadImage
   },
   data () {
     return {
