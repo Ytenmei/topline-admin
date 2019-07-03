@@ -3,11 +3,12 @@
     <div class="box-wrap" @click="handleShowMdiaBox">
       <p>点击选择图片</p>
       <i
+      v-if="!value"
       style="margin-top: 20px;
       font-size: 90px;color: #eee;"
       class="iconfont icon-image_upload"
       ></i>
-      <img src="" width="120">
+      <img v-else :src="value" width="100%">
     </div>
       <!-- 对话框 -->
     <el-dialog
@@ -33,7 +34,7 @@
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleOk">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -42,6 +43,8 @@
 <script>
 export default {
   name: 'UploadImage',
+  // value 就是cover.images[索引]的图片
+  props: ['value'],
   data () {
     return {
       dialogVisible: false,
@@ -54,7 +57,16 @@ export default {
       this.dialogVisible = true
     },
     handleUpload (res) {
+      // 上传成功，预览图片
       this.imageUrl = res.data.url
+    },
+    handleOk () {
+      this.$emit('input', this.imageUrl) // 将数据同步到绑定的数据中
+      this.dialogVisible = false // 隐藏弹框
+      this.$message({
+        type: 'success',
+        message: '上传成功'
+      })
     }
   }
 }

@@ -30,8 +30,8 @@
     </el-radio-group>
     <template v-if="articleForm.cover.type > 0">
       <el-row>
-        <el-col  :key="item.id" :span="6" v-for="item in articleForm.cover.type">
-          <UploadImage></UploadImage>
+        <el-col  :key="n.id" :span="6" v-for="n in articleForm.cover.type">
+          <UploadImage v-model="articleForm.cover.images[n-1]"></UploadImage>
         </el-col>
       </el-row>
     </template>
@@ -80,7 +80,7 @@ export default {
         content: '', // 内容
         cover: { // 封面
           type: 1, // 封面类型 -1:自动，0-无图，1-1张，3-3张
-          images: []
+          images: [] // 图片链接，这是真正存储图片的数据，
         },
         channel_id: '' // 频道
       },
